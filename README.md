@@ -70,7 +70,7 @@ Déployer production uniquement
 ansible-playbook site.yml --ask-vault-pass --limit production
 
 
-## 🔐 Gestion des Secrets
+##  Gestion des Secrets
 
 Les secrets sont gérés via **Ansible Vault** :
 Chiffrer le fichier
@@ -82,7 +82,7 @@ ansible-vault edit group_vars/all/vault.yml
 Voir le contenu
 ansible-vault view group_vars/all/vault.yml
 
-## 🏷️ Tags Disponibles
+##  Tags Disponibles
 
 | Tag | Description |
 |-----|-------------|
@@ -92,7 +92,7 @@ ansible-vault view group_vars/all/vault.yml
 | staging | Environnement staging |
 | production | Environnement production |
 
-## 📊 Vérifications
+##  Vérifications
 
 Vérifier la syntaxe
 ansible-playbook site.yml --syntax-check
@@ -103,18 +103,6 @@ ansible-playbook site.yml --check --ask-vault-pass
 Tester la connectivité
 ansible all -m ping
 
-Commandes Importantes
-
-# Créer la structure du projet
-mkdir -p projet-kapsulekorp-iac/{group_vars/all,roles/{common,nginx,mysql,php,app}/{tasks,templates,handlers}}
-
-# Initialiser Git
-cd projet-kapsulekorp-iac
-git init
-git add .
-git commit -m "Initial commit - Projet Ansible KapsuleKorp"
-
-# Chiffrer le vault
 ansible-vault encrypt group_vars/all/vault.yml
 
 # Tester la connexion
