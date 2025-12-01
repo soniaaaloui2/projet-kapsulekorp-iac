@@ -1,42 +1,24 @@
 ---
-# Rôle PHP - Installation et configuration de PHP-FPM
-
-- name: Ajout du repository PHP
-  apt_repository:
-    repo: ppa:ondrej/php
-    state: present
-  tags: php
-
 - name: Installation de PHP et ses extensions
   apt:
     name:
-      - "php{{ php_version }}"
-      - "php{{ php_version }}-fpm"
-      - "php{{ php_version }}-mysql"
-      - "php{{ php_version }}-curl"
-      - "php{{ php_version }}-gd"
-      - "php{{ php_version }}-mbstring"
-      - "php{{ php_version }}-xml"
-      - "php{{ php_version }}-zip"
-      - "php{{ php_version }}-intl"
-      - "php{{ php_version }}-bcmath"
+      - php
+      - php-fpm
+      - php-mysql
+      - php-curl
+      - php-gd
+      - php-mbstring
+      - php-xml
+      - php-zip
+      - php-intl
+      - php-bcmath
     state: present
     update_cache: yes
   tags: php
 
-- name: Configuration de PHP
-  template:
-    src: php.ini.j2
-    dest: "/etc/php/{{ php_version }}/fpm/conf.d/99-custom.ini"
-    owner: root
-    group: root
-    mode: '0644'
-  notify: restart php-fpm
-  tags: php
-
 - name: Démarrage et activation de PHP-FPM
   service:
-    name: "php{{ php_version }}-fpm"
+    name: php8.4-fpm
     state: started
     enabled: yes
   tags: php

@@ -9,4 +9,4 @@ php_memory_limit: "128M"
 mysql_max_connections: 50
 
 # Configuration Nginx staging
-nginx_server_name: "staging.kapsulekorp.local"
+nginx_server_name: "_"

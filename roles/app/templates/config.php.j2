@@ -6,7 +6,8 @@
  */
 
 // Configuration de la base de données
-define('DB_HOST', '{{ groups["staging_db"][0] if "staging" in group_names else groups["production_db"][0] }}');
+//define('DB_HOST', '{{ groups["staging_db"][0] if "staging" in group_names else groups["production_db"][0] }}');
+define('DB_HOST', '10.0.2.15');
 define('DB_NAME', '{{ vault_mysql_app_database }}');
 define('DB_USER', '{{ vault_mysql_app_user }}');
 define('DB_PASS', '{{ vault_mysql_app_password }}');
