@@ -12,7 +12,7 @@ $server_info = [
     'server_ip' => $_SERVER['SERVER_ADDR'] ?? 'N/A',
     'php_version' => phpversion(),
     'environment' => '{{ environment_name }}',
-    'deployed_at' => '{{ ansible_date_time.iso8601 | default("N/A") }}'
+    'deployed_at' => date('Y-m-d H:i:s')
 ];
 
 // Test de connexion MySQL
