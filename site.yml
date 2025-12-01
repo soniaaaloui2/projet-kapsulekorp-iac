@@ -1,0 +1,50 @@
+---
+# Playbook principal KapsuleKorp
+# Déploiement de l'infrastructure LEMP
+
+- name: Configuration commune de tous les serveurs
+  hosts: all
+  become: true
+  roles:
+    - common
+  tags: common
+
+- name: Configuration des serveurs de base de données
+  hosts: databases
+  become: true
+  roles:
+    - mysql
+  tags: database
+
+- name: Configuration des serveurs web
+  hosts: webservers
+  become: true
+  roles:
+    - nginx
+    - php
+    - app
+  tags: webserver
+
+# Playbook pour staging uniquement
+- name: Déploiement Staging
+  hosts: staging
+  become: true
+  vars:
+    environment_name: staging
+  tasks:
+    - name: Afficher le message de déploiement staging
+      debug:
+        msg: "Déploiement en cours sur l'environnement STAGING"
+  tags: staging
+
+# Playbook pour production uniquement
+- name: Déploiement Production
+  hosts: production
+  become: true
+  vars:
+    environment_name: production
+  tasks:
+    - name: Afficher le message de déploiement production
+      debug:
+        msg: "Déploiement en cours sur l'environnement PRODUCTION"
+  tags: production

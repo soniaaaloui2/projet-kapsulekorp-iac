@@ -1,0 +1,68 @@
+---
+# Rôle Nginx - Installation et configuration du serveur web
+
+- name: Installation de Nginx
+  apt:
+    name: nginx
+    state: present
+  tags: nginx
+
+- name: Création du répertoire de l'application
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  tags: nginx
+
+- name: Suppression du site par défaut
+  file:
+    path: /etc/nginx/sites-enabled/default
+    state: absent
+  notify: reload nginx
+  tags: nginx
+
+- name: Déploiement de la configuration Nginx
+  template:
+    src: nginx.conf.j2
+    dest: "/etc/nginx/sites-available/{{ app_name }}"
+    owner: root
+    group: root
+    mode: '0644'
+  notify: reload nginx
+  tags: nginx
+
+- name: Activation du site
+  file:
+    src: "/etc/nginx/sites-available/{{ app_name }}"
+    dest: "/etc/nginx/sites-enabled/{{ app_name }}"
+    state: link
+  notify: reload nginx
+  tags: nginx
+
+- name: Ouverture du port HTTP dans UFW
+  ufw:
+    rule: allow
+    port: '80'
+    proto: tcp
+  tags: nginx
+
+- name: Ouverture du port HTTPS dans UFW
+  ufw:
+    rule: allow
+    port: '443'
+    proto: tcp
+  tags: nginx
+
+- name: Vérification de la configuration Nginx
+  command: nginx -t
+  changed_when: false
+  tags: nginx
+
+- name: Démarrage et activation de Nginx
+  service:
+    name: nginx
+    state: started
+    enabled: yes
+  tags: nginx

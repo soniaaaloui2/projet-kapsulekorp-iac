@@ -1,0 +1,21 @@
+<?php
+/**
+ * Configuration de l'application KapsuleKorp
+ * Généré automatiquement par Ansible
+ * Environnement: {{ environment_name }}
+ */
+
+// Configuration de la base de données
+define('DB_HOST', '{{ groups["staging_db"][0] if "staging" in group_names else groups["production_db"][0] }}');
+define('DB_NAME', '{{ vault_mysql_app_database }}');
+define('DB_USER', '{{ vault_mysql_app_user }}');
+define('DB_PASS', '{{ vault_mysql_app_password }}');
+
+// Configuration de l'application
+define('APP_NAME', '{{ app_name }}');
+define('APP_ENV', '{{ environment_name }}');
+define('APP_DEBUG', {{ 'true' if debug_mode else 'false' }});
+
+// Ne pas modifier ci-dessous
+error_reporting(APP_DEBUG ? E_ALL : 0);
+ini_set('display_errors', APP_DEBUG ? '1' : '0');

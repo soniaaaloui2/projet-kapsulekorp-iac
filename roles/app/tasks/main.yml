@@ -1,0 +1,38 @@
+---
+# Rôle App - Déploiement de l'application web
+
+- name: Création du répertoire de l'application
+  file:
+    path: "{{ app_root }}"
+    state: directory
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0755'
+  tags: app
+
+- name: Déploiement de la page d'accueil PHP
+  template:
+    src: index.php.j2
+    dest: "{{ app_root }}/index.php"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0644'
+  tags: app
+
+- name: Déploiement du fichier de configuration
+  template:
+    src: config.php.j2
+    dest: "{{ app_root }}/config.php"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0640'
+  tags: app
+
+- name: Création du fichier de healthcheck
+  copy:
+    content: "OK"
+    dest: "{{ app_root }}/health.txt"
+    owner: "{{ app_user }}"
+    group: "{{ app_group }}"
+    mode: '0644'
+  tags: app

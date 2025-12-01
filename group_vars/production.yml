@@ -1,0 +1,12 @@
+---
+# Variables spécifiques à l'environnement Production
+
+environment_name: "production"
+debug_mode: false
+
+# Ressources optimisées pour production
+php_memory_limit: "512M"
+mysql_max_connections: 300
+
+# Configuration Nginx production
+nginx_server_name: "www.kapsulekorp.local"

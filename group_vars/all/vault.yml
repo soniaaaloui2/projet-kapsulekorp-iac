@@ -1,0 +1,7 @@
+
+# Secrets KapsuleKorp - FICHIER À CHIFFRER
+
+vault_mysql_root_password: "R00t_S3cur3_P@ss!"
+vault_mysql_app_user: "kapsulekorp_user"
+vault_mysql_app_password: "App_S3cur3_P@ss!"
+vault_mysql_app_database: "kapsulekorp_db"

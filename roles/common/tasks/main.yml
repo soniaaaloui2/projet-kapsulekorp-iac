@@ -1,0 +1,59 @@
+---
+# Rôle Common - Configuration de base des serveurs
+
+- name: Mise à jour du cache APT
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+  tags: common
+
+- name: Mise à jour de tous les packages
+  apt:
+    upgrade: safe
+  tags: common
+
+- name: Installation des packages communs
+  apt:
+    name: "{{ common_packages }}"
+    state: present
+  tags: common
+
+- name: Configuration du fuseau horaire
+  timezone:
+    name: Europe/Paris
+  tags: common
+
+- name: Configuration du hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+  tags: common
+
+- name: Ajout des entrées /etc/hosts pour les serveurs
+  lineinfile:
+    path: /etc/hosts
+    line: "{{ hostvars[item]['ansible_host'] }} {{ item }}"
+    state: present
+  loop: "{{ groups['all'] }}"
+  when: hostvars[item]['ansible_host'] is defined
+  tags: common
+
+- name: Désactivation de l'authentification par mot de passe SSH
+  lineinfile:
+    path: /etc/ssh/sshd_config
+    regexp: '^#?PasswordAuthentication'
+    line: 'PasswordAuthentication no'
+  notify: restart sshd
+  tags: common
+
+- name: Configuration du pare-feu UFW - Autoriser SSH
+  ufw:
+    rule: allow
+    port: '22'
+    proto: tcp
+  tags: common
+
+- name: Activation du pare-feu UFW
+  ufw:
+    state: enabled
+    policy: deny
+  tags: common

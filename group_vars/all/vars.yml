@@ -1,0 +1,36 @@
+---
+# Variables globales KapsuleKorp
+
+# Configuration Nginx
+nginx_worker_processes: auto
+nginx_worker_connections: 1024
+
+# Configuration PHP
+php_version: "8.1"
+php_memory_limit: "256M"
+php_upload_max_filesize: "64M"
+php_post_max_size: "64M"
+php_max_execution_time: 300
+
+# Configuration MySQL
+mysql_version: "8.0"
+mysql_bind_address: "0.0.0.0"
+mysql_max_connections: 150
+
+# Application
+app_name: "kapsulekorp"
+app_root: "/var/www/{{ app_name }}"
+app_user: "www-data"
+app_group: "www-data"
+
+# Packages communs
+common_packages:
+  - curl
+  - wget
+  - vim
+  - htop
+  - git
+  - unzip
+  - software-properties-common
+  - apt-transport-https
+  - ca-certificates

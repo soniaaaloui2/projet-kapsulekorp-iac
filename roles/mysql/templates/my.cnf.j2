@@ -1,0 +1,24 @@
+# Configuration MySQL personnalisée pour KapsuleKorp
+# Environnement: {{ environment_name }}
+
+[mysqld]
+# Réseau
+bind-address = {{ mysql_bind_address }}
+port = 3306
+
+# Performance
+max_connections = {{ mysql_max_connections }}
+innodb_buffer_pool_size = 256M
+innodb_log_file_size = 64M
+
+# Sécurité
+local_infile = 0
+
+# Encoding
+character-set-server = utf8mb4
+collation-server = utf8mb4_unicode_ci
+
+# Logs
+slow_query_log = 1
+slow_query_log_file = /var/log/mysql/mysql-slow.log
+long_query_time = 2

@@ -1,0 +1,186 @@
+<?php
+/**
+ * KapsuleKorp - Application de démonstration
+ * Environnement: {{ environment_name }}
+ * Déployé avec Ansible
+ */
+
+require_once 'config.php';
+
+$server_info = [
+    'hostname' => gethostname(),
+    'server_ip' => $_SERVER['SERVER_ADDR'] ?? 'N/A',
+    'php_version' => phpversion(),
+    'environment' => '{{ environment_name }}',
+    'deployed_at' => '{{ ansible_date_time.iso8601 | default("N/A") }}'
+];
+
+// Test de connexion MySQL
+$db_status = 'Non connecté';
+$db_info = [];
+
+try {
+    $pdo = new PDO(
+        "mysql:host=" . DB_HOST . ";dbname=" . DB_NAME,
+        DB_USER,
+        DB_PASS,
+        [PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION]
+    );
+    $db_status = 'Connecté';
+    
+    $stmt = $pdo->query("SELECT VERSION() as version");
+    $row = $stmt->fetch(PDO::FETCH_ASSOC);
+    $db_info['version'] = $row['version'];
+    $db_info['host'] = DB_HOST;
+    $db_info['database'] = DB_NAME;
+} catch (PDOException $e) {
+    $db_status = 'Erreur: ' . $e->getMessage();
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KapsuleKorp - {{ environment_name | capitalize }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+        .badge.staging { background: #ffc107; color: #333; }
+        .badge.production { background: #28a745; color: white; }
+        .section {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .section h2 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        .info-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .info-item label {
+            display: block;
+            color: #666;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+        .info-item span {
+            color: #333;
+            font-weight: 600;
+        }
+        .status {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+        .status.success { background: #d4edda; color: #155724; }
+        .status.error { background: #f8d7da; color: #721c24; }
+        footer {
+            text-align: center;
+            margin-top: 30px;
+            color: #666;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1> KapsuleKorp</h1>
+        <span class="badge {{ environment_name }}">{{ environment_name | upper }}</span>
+        
+        <div class="section">
+            <h2> Informations Serveur</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Hostname</label>
+                    <span><?= htmlspecialchars($server_info['hostname']) ?></span>
+                </div>
+                <div class="info-item">
+                    <label>IP Serveur</label>
+                    <span><?= htmlspecialchars($server_info['server_ip']) ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Version PHP</label>
+                    <span><?= htmlspecialchars($server_info['php_version']) ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Environnement</label>
+                    <span><?= htmlspecialchars($server_info['environment']) ?></span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🗄️ Base de Données MySQL</h2>
+            <div class="info-grid">
+                <div class="info-item">
+                    <label>Statut</label>
+                    <span class="status <?= $db_status === 'Connecté' ? 'success' : 'error' ?>">
+                        <?= htmlspecialchars($db_status) ?>
+                    </span>
+                </div>
+                <?php if (!empty($db_info)): ?>
+                <div class="info-item">
+                    <label>Version MySQL</label>
+                    <span><?= htmlspecialchars($db_info['version']) ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Hôte</label>
+                    <span><?= htmlspecialchars($db_info['host']) ?></span>
+                </div>
+                <div class="info-item">
+                    <label>Base de données</label>
+                    <span><?= htmlspecialchars($db_info['database']) ?></span>
+                </div>
+                <?php endif; ?>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Infrastructure déployée avec <strong>Ansible</strong> | KapsuleKorp © 2025</p>
+        </footer>
+    </div>
+</body>
+</html>

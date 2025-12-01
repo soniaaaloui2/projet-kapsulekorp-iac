@@ -1,0 +1,91 @@
+---
+# Rôle MySQL - Installation et configuration de la base de données
+
+- name: Installation de MySQL Server
+  apt:
+    name:
+      - mysql-server
+      - mysql-client
+      - python3-mysqldb
+    state: present
+  tags: mysql
+
+- name: Démarrage et activation de MySQL
+  service:
+    name: mysql
+    state: started
+    enabled: yes
+  tags: mysql
+
+- name: Déploiement de la configuration MySQL
+  template:
+    src: my.cnf.j2
+    dest: /etc/mysql/mysql.conf.d/custom.cnf
+    owner: root
+    group: root
+    mode: '0644'
+  notify: restart mysql
+  tags: mysql
+
+- name: Définition du mot de passe root MySQL
+  mysql_user:
+    name: root
+    password: "{{ vault_mysql_root_password }}"
+    host: localhost
+    login_unix_socket: /var/run/mysqld/mysqld.sock
+    state: present
+  tags: mysql
+
+- name: Création du fichier .my.cnf pour root
+  template:
+    src: root_my.cnf.j2
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: '0600'
+  tags: mysql
+
+- name: Suppression des utilisateurs anonymes
+  mysql_user:
+    name: ''
+    host_all: yes
+    state: absent
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+  tags: mysql
+
+- name: Suppression de la base de données test
+  mysql_db:
+    name: test
+    state: absent
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+  tags: mysql
+
+- name: Création de la base de données de l'application
+  mysql_db:
+    name: "{{ vault_mysql_app_database }}"
+    state: present
+    encoding: utf8mb4
+    collation: utf8mb4_unicode_ci
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+  tags: mysql
+
+- name: Création de l'utilisateur de l'application
+  mysql_user:
+    name: "{{ vault_mysql_app_user }}"
+    password: "{{ vault_mysql_app_password }}"
+    priv: "{{ vault_mysql_app_database }}.*:ALL"
+    host: '%'
+    state: present
+    login_user: root
+    login_password: "{{ vault_mysql_root_password }}"
+  tags: mysql
+
+- name: Ouverture du port MySQL dans UFW
+  ufw:
+    rule: allow
+    port: '3306'
+    proto: tcp
+  tags: mysql

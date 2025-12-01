@@ -1,0 +1,22 @@
+; Configuration PHP personnalisée pour KapsuleKorp
+; Environnement: {{ environment_name }}
+
+[PHP]
+memory_limit = {{ php_memory_limit }}
+upload_max_filesize = {{ php_upload_max_filesize }}
+post_max_size = {{ php_post_max_size }}
+max_execution_time = {{ php_max_execution_time }}
+max_input_time = 300
+
+; Sécurité
+expose_php = Off
+display_errors = {{ 'On' if debug_mode else 'Off' }}
+log_errors = On
+error_log = /var/log/php_errors.log
+
+; Sessions
+session.cookie_httponly = 1
+session.use_strict_mode = 1
+
+; Timezone
+date.timezone = Europe/Paris

@@ -1,0 +1,43 @@
+# Configuration Nginx pour {{ app_name }}
+# Environnement: {{ environment_name }}
+
+server {
+    listen 80;
+    server_name {{ nginx_server_name | default('_') }};
+    
+    root {{ app_root }};
+    index index.php index.html index.htm;
+    
+    # Logs
+    access_log /var/log/nginx/{{ app_name }}_access.log;
+    error_log /var/log/nginx/{{ app_name }}_error.log;
+    
+    # Gzip compression
+    gzip on;
+    gzip_types text/plain text/css application/json application/javascript text/xml application/xml;
+    
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+    
+    # PHP-FPM configuration
+    location ~ \.php$ {
+        fastcgi_pass unix:/var/run/php/php{{ php_version }}-fpm.sock;
+        fastcgi_index index.php;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+        include fastcgi_params;
+        
+        # Paramètres de timeout
+        fastcgi_read_timeout {{ php_max_execution_time }};
+    }
+    
+    # Bloquer l'accès aux fichiers cachés
+    location ~ /\. {
+        deny all;
+    }
+    
+    # Bloquer l'accès aux fichiers sensibles
+    location ~* \.(env|log|sql)$ {
+        deny all;
+    }
+}

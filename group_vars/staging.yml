@@ -1,0 +1,12 @@
+---
+# Variables spécifiques à l'environnement Staging
+
+environment_name: "staging"
+debug_mode: true
+
+# Ressources limitées pour staging
+php_memory_limit: "128M"
+mysql_max_connections: 50
+
+# Configuration Nginx staging
+nginx_server_name: "staging.kapsulekorp.local"
